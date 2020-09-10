@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -51,7 +53,15 @@ public class MainServlet extends HttpServlet {
 
             list.add(article);
         }
+        
+        Collections.sort(list, new Comparator<Article>() {
 
+            @Override
+            public int compare(Article o1, Article o2) {
+                // 倒序，往前从近到远
+                return o2.getTime().compareTo(o1.getTime());
+            }
+        });
         req.setAttribute("articles", list);
         // 参数不能写成"/index.jsp"，不然参数传递不过去
         req.getRequestDispatcher("index.jsp").forward(req, resp);
