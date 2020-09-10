@@ -51,12 +51,28 @@ public class ArticleServlet extends HttpServlet {
         String path = (String) application.getInitParameter("markdown-path");
 
         File file = new File(path + File.separator + "_posts" + File.separator + fileName);
-        resp.getWriter().print(convert(file));
+        List<String> lines = readFile(file);
+        String title;
+        // 兼容hexo生成的文章
+        if (!isFromHexo(lines)) {
+            title = fileName;
+        } else {
+            // 获取标题
+            title = lines.get(1).replace("title:", "").trim();
+
+            // 删除前边冗余的行
+            int count = redundantLineCount(lines);
+            while (count-- > 0) {
+                lines.remove(0);
+            }
+        }
+
+        req.setAttribute("title", title);
+        req.setAttribute("content", convert(toString(lines)));
+        req.getRequestDispatcher("article.jsp").forward(req, resp);
     }
 
-    private String convert(final File file) {
-        final String content = readFile(file);
-
+    private String convert(String content) {
         // markdown to image
         try {
             MutableDataSet options = new MutableDataSet();
@@ -64,16 +80,16 @@ public class ArticleServlet extends HttpServlet {
             options.set(Parser.EXTENSIONS, Arrays.asList(new Extension[]{TablesExtension.create()}));
             Parser parser = Parser.builder(options).build();
             HtmlRenderer renderer = HtmlRenderer.builder(options)
-//                    .nodeRendererFactory()
-//                    .linkResolverFactory()
-//                    .htmlIdGeneratorFactory()
-//                    .attributeProviderFactory(new IndependentAttributeProviderFactory() {
-//                        @Override
-//                        public AttributeProvider create(NodeRendererContext nodeRendererContext) {
-//                            File rootDir = file.getParentFile().getParentFile();
-//                            return new CustomAttributeProvider(rootDir);
-//                        }
-//                    })
+                    //                    .nodeRendererFactory()
+                    //                    .linkResolverFactory()
+                    //                    .htmlIdGeneratorFactory()
+                    //                    .attributeProviderFactory(new IndependentAttributeProviderFactory() {
+                    //                        @Override
+                    //                        public AttributeProvider create(NodeRendererContext nodeRendererContext) {
+                    //                            File rootDir = file.getParentFile().getParentFile();
+                    //                            return new CustomAttributeProvider(rootDir);
+                    //                        }
+                    //                    })
                     .build();
 
             Node document = parser.parse(content);
@@ -87,8 +103,13 @@ public class ArticleServlet extends HttpServlet {
         }
     }
 
-    private String readFile(final File file) {
-        // 从文件中读取markdown内容
+    /**
+     * 从文件中读取markdown内容，每一行放入到列表中
+     *
+     * @param file
+     * @return
+     */
+    private List<String> readFile(final File file) {
         List<String> list = new LinkedList<>();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "utf-8"))) {
             String line;
@@ -97,15 +118,12 @@ public class ArticleServlet extends HttpServlet {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return e.toString();
         }
 
-        // 兼容hexo生成的文章
-        if (isFromHexo(list)) {
-            int count = 6;
-            while (count-- > 0) list.remove(0);
-        }
+        return list;
+    }
 
+    private String toString(final List<String> list) {
         StringBuilder sb = new StringBuilder();
         for (String str : list) {
             sb.append(str).append("\n");
@@ -116,21 +134,54 @@ public class ArticleServlet extends HttpServlet {
     }
 
     private boolean isFromHexo(List<String> list) {
-        if (list.size() < 6) return false;
-        if (!list.get(0).equals("---")) return false;
-        if (!list.get(1).startsWith("title:")) return false;
-        if (!list.get(2).startsWith("date:")) return false;
-        if (!list.get(3).startsWith("tags:")) return false;
-        if (!list.get(4).startsWith("categories:") && !list.get(4).equals("---")) return false;
-        if (list.get(4).startsWith("categories:") && !list.get(5).equals("---")) return false;
+        if (list.size() < 6) {
+            return false;
+        }
+        if (!list.get(0).equals("---")) {
+            return false;
+        }
+        if (!list.get(1).startsWith("title:")) {
+            return false;
+        }
+        if (!list.get(2).startsWith("date:")) {
+            return false;
+        }
+        if (!list.get(3).startsWith("tags:")) {
+            return false;
+        }
+        if (!list.get(4).startsWith("categories:") && !list.get(4).equals("---")) {
+            return false;
+        }
+        if (list.get(4).startsWith("categories:") && !list.get(5).equals("---")) {
+            return false;
+        }
 
         return true;
+    }
+
+    /**
+     * 前提是hexo文章
+     *
+     * @param list
+     * @return
+     */
+    private int redundantLineCount(List<String> list) {
+        if (list.get(4).equals("---")) {
+            return 5;
+        }
+
+        if (list.get(5).equals("---")) {
+            return 6;
+        }
+
+        return -1;
     }
 
     /**
      * 处理标签的属性
      */
     static class CustomAttributeProvider implements AttributeProvider {
+
         private File rootDir;
 
         public CustomAttributeProvider(File rootDir) {
@@ -143,7 +194,9 @@ public class ArticleServlet extends HttpServlet {
                 return;
             }
 
-            if (true) return;
+            if (true) {
+                return;
+            }
 
             File file = new File(rootDir, attributes.getValue("src"));
             attributes.replaceValue("src", file.getAbsolutePath());
