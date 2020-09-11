@@ -15,6 +15,10 @@
                 width:50%;
                 margin-left: 25%
             }
+            img{
+                width:100%;
+                height:auto;
+            }
         </style>
     </head>
     <body>
