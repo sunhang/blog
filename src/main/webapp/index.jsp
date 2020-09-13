@@ -4,41 +4,36 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <html>
     <head>
-        <style type="text/css">
-            .articleDiv {
-                display:flex;
-                height:40px;
-                line-height:40px;
-            }
-            .titleDiv {
-                width:450px;
-                margin-left:50%;
-                transform: translate(-225px, 0);
-                font-size: 18px
-            }
-            .timeDiv {
-                width:150px;
-                transform: translate(-225px, 0);
-                font-size: 14px
-            }
-        </style>
+        <title>乐在行走-程序员小航</title>
+        <c:if test="${!is_from_mobile}">
+            <link rel="stylesheet" type="text/css" href="css/index.css" />
+        </c:if>
     </head>
     <body>
-    <center>
-        <h2>乐在行走</h2>
-    </center>
-    <c:forEach items="${articles}" var="article">
-        <div class="articleDiv">
-            <div class="titleDiv">
-                <!-- 这里不能用/article，不能加/ -->
-                <a href="article?file=${article.getFile().getName()}">
-                    ${article.getTitle()}
-                </a>
-            </div>
-            <div class="timeDiv">
-                ${article.getTime()}
-            </div>
+        <div id="page_title_div">
+            <h1 id="enjoy_run">乐在行走</h1>
+            <a id="about_me" href="about.html">关于我</a>
         </div>
-    </c:forEach>
-</body>
+        <div id="recommended">
+            友情推荐：
+            <a href="https://blog.codingnow.com/">云风</a>&nbsp;
+            <a href="https://www.xiaohui.com/">小辉</a>&nbsp;
+            <a href="http://www.heqiangfly.com/">寒江蓑笠</a>&nbsp;
+            <a href="more_recommended.html">更多>></a>
+        </div>
+        <br/>
+        <c:forEach items="${articles}" var="article">
+            <div class="articleDiv">
+                <div class="titleDiv">
+                    <!-- 这里不能用/article，不能加/ -->
+                    <a href="article?file=${article.getFile().getName()}">
+                        ${article.getTitle()}
+                    </a>
+                </div>
+                <div class="timeDiv">
+                    ${article.getTime()}
+                </div>
+            </div>
+        </c:forEach>
+    </body>
 </html>

@@ -1,0 +1,48 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 2020年9月13日, 下午8:39:43
+    Author     : sunhang
+*/
+
+#page_title_div {
+    display:flex;
+    width:600px;
+    margin-left:50%;
+    transform: translate(-50%, 0);
+}
+#enjoy_run {
+    position:relative;
+    margin-left:50%;
+    transform: translate(-50%, 0);
+}
+
+#about_me {
+    position:relative;
+    margin-left: auto;
+    margin-right: 0px
+}
+#recommended {
+    display:flex;
+    margin-left:50%;
+    transform: translate(-225px, 0);
+}
+.articleDiv {
+    display:flex;
+    height:40px;
+    line-height:40px;
+}
+.titleDiv {
+    width:450px;
+    margin-left:50%;
+    transform: translate(-225px, 0);
+    font-size: 18px
+}
+.timeDiv {
+    width:150px;
+    transform: translate(-225px, 0);
+    font-size: 14px
+}

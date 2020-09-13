@@ -66,7 +66,8 @@ public class ArticleServlet extends HttpServlet {
                 lines.remove(0);
             }
         }
-
+        
+        req.setAttribute("is_from_mobile", Utils.isMobileDevice(req));
         req.setAttribute("title", title);
         req.setAttribute("content", convert(toString(lines)));
         req.getRequestDispatcher("article.jsp").forward(req, resp);
@@ -94,7 +95,7 @@ public class ArticleServlet extends HttpServlet {
 
             Node document = parser.parse(content);
             String html = renderer.render(document);
-            System.out.println(html);
+//            System.out.println(html);
 
             return html;
         } catch (Exception e) {

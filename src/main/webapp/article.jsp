@@ -4,25 +4,19 @@
     Author     : sunhang
 --%>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page contentType="text/html" pageEncoding="UTF-8" isELIgnored="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title><%=request.getAttribute("title")%></title>
-        <style type="text/css">
-            .centerDiv {
-                width:50%;
-                margin-left: 25%
-            }
-            img{
-                width:100%;
-                height:auto;
-            }
-        </style>
+        <c:if test="${!is_from_mobile}">
+            <link rel="stylesheet" type="text/css" href="css/article.css" />
+        </c:if>
     </head>
     <body>
-        <h1 style="text-align:center;"><%=request.getAttribute("title")%></h1>
+        <h1 id="title"><%=request.getAttribute("title")%></h1>
         <br/>
         <div class="centerDiv">
             <%=request.getAttribute("content")%>

@@ -27,7 +27,6 @@ public class MainServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // 如果不注释掉super，就会报错Servlet  error：HTTP method GET is not supported by this URL
         // super.doGet(req, resp);
-
         final List<Article> list = new ArrayList<Article>();
 
         ServletContext application=this.getServletContext();  
@@ -62,6 +61,7 @@ public class MainServlet extends HttpServlet {
                 return o2.getTime().compareTo(o1.getTime());
             }
         });
+        req.setAttribute("is_from_mobile", Utils.isMobileDevice(req));
         req.setAttribute("articles", list);
         // 参数不能写成"/index.jsp"，不然参数传递不过去
         req.getRequestDispatcher("index.jsp").forward(req, resp);
