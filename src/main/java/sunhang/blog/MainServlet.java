@@ -27,11 +27,17 @@ public class MainServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // 如果不注释掉super，就会报错Servlet  error：HTTP method GET is not supported by this URL
         // super.doGet(req, resp);
-        final List<Article> list = new ArrayList<Article>();
+        try {
+            handleGet(req, resp);
+        } catch (Exception e) {
+            Utils.writeException(resp.getWriter(), e);
+            e.printStackTrace();
+        }
+    }
 
-        ServletContext application=this.getServletContext();  
-        String path = (String)application.getInitParameter("markdown-path");
-        File posts = new File(new File(path), "_posts");
+    private void handleGet(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        final List<Article> list = new ArrayList<Article>();
+        File posts = Utils.getPosts(this); 
 
 //        2020-01-15-关于android异步编程的学习.md
         for (File file : posts.listFiles()) {
@@ -39,7 +45,7 @@ public class MainServlet extends HttpServlet {
             String fileName = file.getName();
             Pattern pattern = Pattern.compile("(\\d{4}\\-\\d{1,2}\\-\\d{1,2})\\-(([u4e00-u9fa5]|.)*)\\.md");
             Matcher matcher = pattern.matcher(fileName);
-            
+
             if (!matcher.find()) {
                 System.out.println(fileName);
                 continue;
@@ -52,7 +58,7 @@ public class MainServlet extends HttpServlet {
 
             list.add(article);
         }
-        
+
         Collections.sort(list, new Comparator<Article>() {
 
             @Override

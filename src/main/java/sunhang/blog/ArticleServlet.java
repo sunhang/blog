@@ -47,10 +47,16 @@ public class ArticleServlet extends HttpServlet {
         resp.setContentType("text/html;charset=utf-8");//设置编码格式，以防前端页面出现中文乱码
 
         String fileName = req.getParameter("file");
-        ServletContext application = this.getServletContext();
-        String path = (String) application.getInitParameter("markdown-path");
+        File posts = null;
+        try {
+            posts = Utils.getPosts(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Utils.writeException(resp.getWriter(), e);
+            return;
+        }
 
-        File file = new File(path + File.separator + "_posts" + File.separator + fileName);
+        File file = new File(posts, fileName);
         List<String> lines = readFile(file);
         String title;
         // 兼容hexo生成的文章
@@ -66,7 +72,7 @@ public class ArticleServlet extends HttpServlet {
                 lines.remove(0);
             }
         }
-        
+
         req.setAttribute("is_from_mobile", Utils.isMobileDevice(req));
         req.setAttribute("title", title);
         req.setAttribute("content", convert(toString(lines)));

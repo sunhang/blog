@@ -25,6 +25,6 @@
     </servlet-mapping>
     <context-param>
         <param-name>markdown-path</param-name>
-        <param-value>/Users/sunhang/Documents/temp/source</param-value>
+        <param-value>/home/git/Documents/source:/Users/sunhang/my/sunhang.github.io/source</param-value>
     </context-param>
 </web-app>
