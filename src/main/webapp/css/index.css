@@ -39,10 +39,10 @@ and open the template in the editor.
     width:450px;
     margin-left:50%;
     transform: translate(-225px, 0);
-    font-size: 18px
+    font-size: 1.2em
 }
 .timeDiv {
     width:150px;
     transform: translate(-225px, 0);
-    font-size: 14px
+    font-size: 0.9em
 }
