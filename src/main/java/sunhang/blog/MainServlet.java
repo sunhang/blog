@@ -49,8 +49,11 @@ public class MainServlet extends HttpServlet {
             session.setAttribute("articles", list);
         }
         int visitorCount = getVisitorCount(session.isNew());
-        int pageIndex = getPageIndex(req);
-        List<Article> result = getSubList(list, pageIndex);
+        int pageIndex = 0;
+        List<Article> result = null;
+
+        pageIndex = getPageIndex(req, list.size());
+        result = getSubList(list, pageIndex);
         req.setAttribute("is_from_mobile", Utils.isMobileDevice(req));
         req.setAttribute("articles", result);
         req.setAttribute("pre_page", getPrePage(pageIndex));
@@ -62,14 +65,17 @@ public class MainServlet extends HttpServlet {
 
     private int getVisitorCount(boolean isSessionNew) {
         ServletContext context = getServletContext();   // 获得ServletContext对象
-        Integer count = (Integer) context.getAttribute("counter");   // 从ServletContext中获得计数器对象
-        if (count == null) {      // 如果为空，则在ServletContext中设置一个计数器的属性.即在第一次提交请求时创建该属性
-            count = 0;
+        Integer count = null;
+        synchronized (MainServlet.class) {
+            count = (Integer) context.getAttribute("counter");   // 从ServletContext中获得计数器对象
+            if (count == null) {      // 如果为空，则在ServletContext中设置一个计数器的属性.即在第一次提交请求时创建该属性
+                count = 0;
+            }
+            if (isSessionNew) {
+                count++;
+            }
+            context.setAttribute("counter", count);
         }
-        if (isSessionNew) {
-            count++;
-        }
-        context.setAttribute("counter", count);
         return count;
     }
 
@@ -110,17 +116,44 @@ public class MainServlet extends HttpServlet {
         return list;
     }
 
-    private int getPageIndex(HttpServletRequest req) {
+    private int getPageIndex(HttpServletRequest req, int totalSize) {
         String str = req.getParameter("page_index");
         if (str == null) {
             str = "0";
         }
-        return Integer.parseInt(str);
+        int value;
+        try {
+            value = Integer.parseInt(str);
+        } catch (Exception e) {
+            e.printStackTrace();
+            value = 0;
+        }
+        value = reAssignPageIndex(value, totalSize);
+        return value;
+    }
+
+    private int reAssignPageIndex(int pageIndex, int totalSize) {
+        int pageCount = totalSize / COUNT_PY_PAGE;
+        if (totalSize % COUNT_PY_PAGE != 0) {
+            pageCount++;
+        }
+        if (pageIndex >= pageCount) {
+            pageIndex = pageCount - 1;
+        }
+        // 判断放在后边，防止pageCount为0,pageIndex为-1的情况
+        if (pageIndex < 0) {
+            return 0;
+        }
+
+        return pageIndex;
     }
 
     private List<Article> getSubList(List<Article> list, int pageIndex) {
         int from = pageIndex * COUNT_PY_PAGE;
         int to = (pageIndex + 1) * COUNT_PY_PAGE;
+        if (from < 0) {
+            from = 0;
+        }
         if (to > list.size()) {
             to = list.size();
         }

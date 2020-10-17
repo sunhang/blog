@@ -49,5 +49,7 @@
                 <a href="default?page_index=${next_page}">下一页</a>
             </c:if>
         </nav>
-    </body>
+        <br/>
+    <center> <a id="beian" href="http://beian.miit.gov.cn">京ICP备2020038765号</a> </center>
+</body>
 </html>
