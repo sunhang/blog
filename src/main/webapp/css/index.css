@@ -46,3 +46,7 @@ and open the template in the editor.
     transform: translate(-225px, 0);
     font-size: 0.9em
 }
+#nav_page {
+    margin-left:50%;
+    transform: translate(-225px, 0);
+}

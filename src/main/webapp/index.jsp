@@ -20,6 +20,8 @@
             <a href="https://www.xiaohui.com/">小辉</a>&nbsp;
             <a href="http://www.heqiangfly.com/">寒江蓑笠</a>&nbsp;
             <a href="more_recommended.html">更多>></a>
+            &nbsp;
+            您是第${visitor_count}位访客
         </div>
         <br/>
         <c:forEach items="${articles}" var="article">
@@ -35,5 +37,17 @@
                 </div>
             </div>
         </c:forEach>
+        <br/>
+        <nav id="nav_page">           
+            <c:if test="${pre_page != -1}">
+                <a href="default?page_index=0">首页</a>
+                &nbsp;
+                <a href="default?page_index=${pre_page}">上一页</a>
+                &nbsp;
+            </c:if>
+            <c:if test="${next_page != -1}">
+                <a href="default?page_index=${next_page}">下一页</a>
+            </c:if>
+        </nav>
     </body>
 </html>
